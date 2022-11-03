@@ -4,13 +4,13 @@ go 1.18
 
 require (
 	github.com/getsentry/sentry-go v0.14.0
-	github.com/go-chi/chi v1.5.4
 	github.com/go-chi/render v1.0.2
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/iancoleman/strcase v0.2.0
 	github.com/joho/godotenv v1.4.0
 	github.com/sirupsen/logrus v1.9.0
 	go.mongodb.org/mongo-driver v1.10.4
+	github.com/go-chi/chi/v5 v5.0.7
 )
 
 require (
@@ -35,7 +35,6 @@ require (
 
 require (
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/bxcodec/faker v2.0.1+incompatible
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
