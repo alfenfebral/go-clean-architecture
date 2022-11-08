@@ -71,7 +71,7 @@ func main() {
 	// Load environment variables
 	err := godotenv.Load()
 	if err != nil {
-		utils.CaptureError(errors.New("Error loading .env file"))
+		utils.CaptureError(errors.New("error loading .env file"))
 	}
 
 	// Init MongoDB
