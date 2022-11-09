@@ -95,7 +95,8 @@ func main() {
 	todoService := services.NewTodoService(todoRepo)
 
 	// Handler
-	handlers.NewTodoHTTPHandler(router, todoService)
+	todoHandler := handlers.NewTodoHTTPHandler(router, todoService)
+	todoHandler.RegisterRoutes()
 
 	// Print
 	PrintAllRoutes(router)

@@ -12,26 +12,30 @@ import (
 	"github.com/go-chi/render"
 )
 
-// TodoHandler represent the httphandler for file
-type TodoHandler struct {
-	TodoService services.TodoService
+// todoHandler represent the http handler for file
+type todoHandler struct {
+	router      *chi.Mux
+	todoService services.TodoService
 }
 
 // NewTodoHTTPHandler - make http handler
-func NewTodoHTTPHandler(router *chi.Mux, service services.TodoService) {
-	handler := &TodoHandler{
-		TodoService: service,
+func NewTodoHTTPHandler(router *chi.Mux, service services.TodoService) *todoHandler {
+	return &todoHandler{
+		router:      router,
+		todoService: service,
 	}
+}
 
-	router.Get("/todo", handler.GetAll)
-	router.Get("/todo/{id}", handler.GetByID)
-	router.Post("/todo", handler.Create)
-	router.Put("/todo/{id}", handler.Update)
-	router.Delete("/todo/{id}", handler.Delete)
+func (handler *todoHandler) RegisterRoutes() {
+	handler.router.Get("/todo", handler.GetAll)
+	handler.router.Get("/todo/{id}", handler.GetByID)
+	handler.router.Post("/todo", handler.Create)
+	handler.router.Put("/todo/{id}", handler.Update)
+	handler.router.Delete("/todo/{id}", handler.Delete)
 }
 
 // GetAll - get all todo http handler
-func (handler *TodoHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+func (handler *todoHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	qQuery := r.URL.Query().Get("q")
 	pageQuery := r.URL.Query().Get("page")
 	perPageQuery := r.URL.Query().Get("per_page")
@@ -52,7 +56,7 @@ func (handler *TodoHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	perPage := utils.PerPage(perPageQuery)
 	offset := utils.Offset(currentPage, perPage)
 
-	results, totalData, err := handler.TodoService.GetAll(qQuery, perPage, offset)
+	results, totalData, err := handler.todoService.GetAll(qQuery, perPage, offset)
 	if err != nil {
 		response.ResponseError(w, r, err)
 		return
@@ -71,12 +75,12 @@ func (handler *TodoHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetByID - get todo by id http handler
-func (handler *TodoHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+func (handler *todoHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	// Get and filter id param
 	id := chi.URLParam(r, "id")
 
 	// Get detail
-	result, err := handler.TodoService.GetByID(id)
+	result, err := handler.todoService.GetByID(id)
 	if err != nil {
 		if err.Error() == "not found" {
 			response.ResponseNotFound(w, r, "Item not found")
@@ -94,7 +98,7 @@ func (handler *TodoHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create - create todo http handler
-func (handler *TodoHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (handler *todoHandler) Create(w http.ResponseWriter, r *http.Request) {
 	data := &models.TodoRequest{}
 	if err := render.Bind(r, data); err != nil {
 		if err.Error() == "EOF" {
@@ -106,7 +110,7 @@ func (handler *TodoHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := handler.TodoService.Create(&models.Todo{
+	result, err := handler.todoService.Create(&models.Todo{
 		Title:       data.Title,
 		Description: data.Description,
 	})
@@ -120,8 +124,8 @@ func (handler *TodoHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Update - update instance by id http handler
-func (handler *TodoHandler) Update(w http.ResponseWriter, r *http.Request) {
+// Update - update todo by id http handler
+func (handler *todoHandler) Update(w http.ResponseWriter, r *http.Request) {
 	// Get and filter id param
 	id := chi.URLParam(r, "id")
 
@@ -137,7 +141,7 @@ func (handler *TodoHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Edit data
-	_, err := handler.TodoService.Update(id, &models.Todo{
+	_, err := handler.todoService.Update(id, &models.Todo{
 		Title:       data.Title,
 		Description: data.Description,
 	})
@@ -159,13 +163,13 @@ func (handler *TodoHandler) Update(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Delete - delete instance by id http handler
-func (handler *TodoHandler) Delete(w http.ResponseWriter, r *http.Request) {
+// Delete - delete todo by id http handler
+func (handler *todoHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	// Get and filter id param
 	id := chi.URLParam(r, "id")
 
 	// Delete record
-	err := handler.TodoService.Delete(id)
+	err := handler.todoService.Delete(id)
 	if err != nil {
 		if err.Error() == "not found" {
 			response.ResponseNotFound(w, r, "Item not found")
