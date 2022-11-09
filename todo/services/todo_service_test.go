@@ -2,9 +2,9 @@ package services_test
 
 import (
 	"errors"
-	mockRepositories "go-clean-architecture/mocks/repository"
-	"go-clean-architecture/models"
-	"go-clean-architecture/services"
+	mockRepositories "go-clean-architecture/todo/mocks/repository"
+	"go-clean-architecture/todo/models"
+	"go-clean-architecture/todo/services"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

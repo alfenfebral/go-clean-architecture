@@ -3,8 +3,8 @@ GOCOVER=$(GO) tool cover
 GOTEST=$(GO) test
 
 mock: 
-	mockery --dir repository --all --output mocks/repository
-	mockery --dir services --all --output mocks/services
+	mockery --dir todo/repository --all --output todo/mocks/repository
+	mockery --dir todo/services --all --output todo/mocks/services
 run:
 	air
 test:

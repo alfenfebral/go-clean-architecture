@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"go-clean-architecture/models"
-	"go-clean-architecture/services"
+	"go-clean-architecture/todo/models"
+	"go-clean-architecture/todo/services"
 	"go-clean-architecture/utils"
 	response "go-clean-architecture/utils/response"
 

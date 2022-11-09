@@ -15,10 +15,10 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
-	"go-clean-architecture/handlers"
 	pkg_mongodb "go-clean-architecture/pkg/mongodb"
-	repository "go-clean-architecture/repository"
-	services "go-clean-architecture/services"
+	handlers "go-clean-architecture/todo/delivery/http"
+	repository "go-clean-architecture/todo/repository"
+	services "go-clean-architecture/todo/services"
 	"go-clean-architecture/utils"
 	response "go-clean-architecture/utils/response"
 )

@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	models "go-clean-architecture/models"
+	models "go-clean-architecture/todo/models"
 
 	mock "github.com/stretchr/testify/mock"
 )
