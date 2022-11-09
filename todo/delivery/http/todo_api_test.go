@@ -53,10 +53,10 @@ func TestTodoGetAll(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.GetAll)
+		handler := http.HandlerFunc(todoHandler.GetAll)
 
 		handler.ServeHTTP(rr, req)
 
@@ -78,10 +78,10 @@ func TestTodoGetAll(t *testing.T) {
 
 		mockService.On("GetAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, 1, ErrDefault)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.GetAll)
+		handler := http.HandlerFunc(todoHandler.GetAll)
 
 		handler.ServeHTTP(rr, req)
 
@@ -106,10 +106,10 @@ func TestTodoGetAll(t *testing.T) {
 
 		mockService.On("GetAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(mockListTodo, 1, nil)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.GetAll)
+		handler := http.HandlerFunc(todoHandler.GetAll)
 
 		handler.ServeHTTP(rr, req)
 
@@ -133,10 +133,10 @@ func TestTodoCreate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Create)
+		handler := http.HandlerFunc(todoHandler.Create)
 
 		handler.ServeHTTP(rr, req)
 
@@ -159,10 +159,10 @@ func TestTodoCreate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Create)
+		handler := http.HandlerFunc(todoHandler.Create)
 
 		handler.ServeHTTP(rr, req)
 
@@ -187,10 +187,10 @@ func TestTodoCreate(t *testing.T) {
 
 		mockService.On("Create", mock.AnythingOfType("*models.Todo")).Return(nil, errors.New(""))
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Create)
+		handler := http.HandlerFunc(todoHandler.Create)
 
 		handler.ServeHTTP(rr, req)
 
@@ -218,10 +218,10 @@ func TestTodoCreate(t *testing.T) {
 
 		mockService.On("Create", mock.AnythingOfType("*models.Todo")).Return(&models.Todo{}, nil)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Create)
+		handler := http.HandlerFunc(todoHandler.Create)
 
 		handler.ServeHTTP(rr, req)
 
@@ -247,10 +247,10 @@ func TestTodoGetByID(t *testing.T) {
 
 		mockService.On("GetByID", mock.AnythingOfType("string")).Return(nil, ErrNotFound)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.GetByID)
+		handler := http.HandlerFunc(todoHandler.GetByID)
 
 		handler.ServeHTTP(rr, req)
 
@@ -272,10 +272,10 @@ func TestTodoGetByID(t *testing.T) {
 
 		mockService.On("GetByID", mock.AnythingOfType("string")).Return(nil, ErrDefault)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.GetByID)
+		handler := http.HandlerFunc(todoHandler.GetByID)
 
 		handler.ServeHTTP(rr, req)
 
@@ -297,10 +297,10 @@ func TestTodoGetByID(t *testing.T) {
 
 		mockService.On("GetByID", mock.AnythingOfType("string")).Return(&models.Todo{}, nil)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.GetByID)
+		handler := http.HandlerFunc(todoHandler.GetByID)
 
 		handler.ServeHTTP(rr, req)
 
@@ -326,10 +326,10 @@ func TestTodoUpdate(t *testing.T) {
 
 		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(&models.Todo{}, nil)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Update)
+		handler := http.HandlerFunc(todoHandler.Update)
 
 		handler.ServeHTTP(rr, req)
 
@@ -352,10 +352,10 @@ func TestTodoUpdate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Update)
+		handler := http.HandlerFunc(todoHandler.Update)
 
 		handler.ServeHTTP(rr, req)
 
@@ -383,10 +383,10 @@ func TestTodoUpdate(t *testing.T) {
 
 		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, ErrNotFound)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Update)
+		handler := http.HandlerFunc(todoHandler.Update)
 
 		handler.ServeHTTP(rr, req)
 
@@ -414,10 +414,10 @@ func TestTodoUpdate(t *testing.T) {
 
 		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, ErrDefault)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Update)
+		handler := http.HandlerFunc(todoHandler.Update)
 
 		handler.ServeHTTP(rr, req)
 
@@ -445,10 +445,10 @@ func TestTodoUpdate(t *testing.T) {
 
 		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(&models.Todo{}, nil)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Update)
+		handler := http.HandlerFunc(todoHandler.Update)
 
 		handler.ServeHTTP(rr, req)
 
@@ -472,10 +472,10 @@ func TestTodoDelete(t *testing.T) {
 
 		mockService.On("Delete", mock.AnythingOfType("string")).Return(ErrNotFound)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Delete)
+		handler := http.HandlerFunc(todoHandler.Delete)
 		handler.ServeHTTP(rr, req)
 
 		// Check the status code is what expected
@@ -491,10 +491,10 @@ func TestTodoDelete(t *testing.T) {
 
 		mockService.On("Delete", mock.AnythingOfType("string")).Return(ErrDefault)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Delete)
+		handler := http.HandlerFunc(todoHandler.Delete)
 		handler.ServeHTTP(rr, req)
 
 		// Check the status code is what expected
@@ -515,10 +515,10 @@ func TestTodoDelete(t *testing.T) {
 
 		mockService.On("Delete", mock.AnythingOfType("string")).Return(nil)
 
-		userHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := handlers.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(userHandler.Delete)
+		handler := http.HandlerFunc(todoHandler.Delete)
 
 		handler.ServeHTTP(rr, req)
 
