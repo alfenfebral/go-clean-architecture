@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"go-clean-architecture/pkg/logger"
 	"go-clean-architecture/utils"
 	"net/http"
 
@@ -49,7 +49,7 @@ func ResponseBodyError(w http.ResponseWriter, r *http.Request, err error) {
 
 // ResponseError - send response error (500)
 func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
-	utils.CaptureError(err)
+	logger.Error(err)
 
 	render.Status(r, http.StatusInternalServerError)
 	render.JSON(w, r, H{
@@ -103,7 +103,7 @@ func ResponseOKList(w http.ResponseWriter, r *http.Request, data *ResponseSucces
 func ResponseInternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	render.Status(r, http.StatusOK)
 
-	fmt.Println(err)
+	logger.Error(err)
 	render.JSON(w, r, H{
 		"success": false,
 		"code":    http.StatusInternalServerError,

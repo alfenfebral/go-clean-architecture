@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"go-clean-architecture/utils"
+	"go-clean-architecture/pkg/logger"
 
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,18 +19,18 @@ func InitMongoDB() (context.Context, func(), *mongo.Client) {
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("DB_URL")))
 	if err != nil {
-		utils.CaptureError(err)
+		logger.Error(err)
 	}
 
 	err = client.Connect(ctx)
 	if err != nil {
-		utils.CaptureError(err)
+		logger.Error(err)
 	}
 
 	// Checking the connection
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		utils.CaptureError(err)
+		logger.Error(err)
 	}
 	logrus.Println("Database connected")
 
