@@ -13,9 +13,9 @@ import (
 	"go-clean-architecture/pkg/config"
 	"go-clean-architecture/pkg/logger"
 	pkg_mongodb "go-clean-architecture/pkg/mongodb"
-	handlers "go-clean-architecture/todo/delivery/http"
-	repository "go-clean-architecture/todo/repository"
-	services "go-clean-architecture/todo/services"
+	todo_http "go-clean-architecture/todo/delivery/http"
+	todo_repository "go-clean-architecture/todo/repository"
+	todod_service "go-clean-architecture/todo/service"
 	"go-clean-architecture/utils"
 	response "go-clean-architecture/utils/response"
 )
@@ -68,13 +68,13 @@ func main() {
 	})
 
 	// Repository
-	todoRepo := repository.NewMongoTodoRepository(client)
+	todoRepo := todo_repository.NewMongoTodoRepository(client)
 
 	// Service
-	todoService := services.NewTodoService(todoRepo)
+	todoService := todod_service.NewTodoService(todoRepo)
 
 	// Handler
-	todoHandler := handlers.NewTodoHTTPHandler(router, todoService)
+	todoHandler := todo_http.NewTodoHTTPHandler(router, todoService)
 	todoHandler.RegisterRoutes()
 
 	// Print

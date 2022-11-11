@@ -4,7 +4,7 @@ GOTEST=$(GO) test
 
 mock: 
 	mockery --dir todo/repository --all --output todo/mocks/repository
-	mockery --dir todo/services --all --output todo/mocks/services
+	mockery --dir todo/service --all --output todo/mocks/service
 run:
 	air
 test:

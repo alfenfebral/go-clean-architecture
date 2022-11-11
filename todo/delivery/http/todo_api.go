@@ -1,10 +1,10 @@
-package handlers
+package http
 
 import (
 	"net/http"
 
 	"go-clean-architecture/todo/models"
-	"go-clean-architecture/todo/services"
+	todo_service "go-clean-architecture/todo/service"
 	"go-clean-architecture/utils"
 	response "go-clean-architecture/utils/response"
 
@@ -15,11 +15,11 @@ import (
 // todoHandler represent the http handler
 type todoHandler struct {
 	router      *chi.Mux
-	todoService services.TodoService
+	todoService todo_service.TodoService
 }
 
 // NewTodoHTTPHandler - make http handler
-func NewTodoHTTPHandler(router *chi.Mux, service services.TodoService) *todoHandler {
+func NewTodoHTTPHandler(router *chi.Mux, service todo_service.TodoService) *todoHandler {
 	return &todoHandler{
 		router:      router,
 		todoService: service,

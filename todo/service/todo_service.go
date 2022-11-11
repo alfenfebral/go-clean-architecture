@@ -1,8 +1,8 @@
-package services
+package service
 
 import (
 	"go-clean-architecture/todo/models"
-	"go-clean-architecture/todo/repository"
+	todo_repository "go-clean-architecture/todo/repository"
 )
 
 // TodoService represent the todo service
@@ -15,11 +15,11 @@ type TodoService interface {
 }
 
 type todoService struct {
-	todoRepo repository.TodoRepository
+	todoRepo todo_repository.TodoRepository
 }
 
 // NewTodoService will create new an TodoService object representation of TodoService interface
-func NewTodoService(a repository.TodoRepository) TodoService {
+func NewTodoService(a todo_repository.TodoRepository) TodoService {
 	return &todoService{
 		todoRepo: a,
 	}
