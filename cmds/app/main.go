@@ -12,9 +12,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
+	"go-clean-architecture/pkg/config"
 	pkg_mongodb "go-clean-architecture/pkg/mongodb"
 	handlers "go-clean-architecture/todo/delivery/http"
 	repository "go-clean-architecture/todo/repository"
@@ -69,7 +69,7 @@ func main() {
 	utils.InitializeValidator()
 
 	// Load environment variables
-	err := godotenv.Load()
+	err := config.LoadConfig()
 	if err != nil {
 		utils.CaptureError(errors.New("error loading .env file"))
 	}
