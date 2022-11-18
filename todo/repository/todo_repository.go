@@ -26,19 +26,19 @@ type TodoRepository interface {
 	Delete(id string) error
 }
 
-type mongoTodoRepository struct {
+type MongoTodoRepositoryImpl struct {
 	client *mongo.Client
 }
 
 // NewMongoTodoRepository will create an object that represent the TodoRepository interface
 func NewMongoTodoRepository(client *mongo.Client) TodoRepository {
-	return &mongoTodoRepository{
+	return &MongoTodoRepositoryImpl{
 		client: client,
 	}
 }
 
 // FindAll - find all todo
-func (m *mongoTodoRepository) FindAll(keyword string, limit int, offset int) ([]*models.Todo, error) {
+func (m *MongoTodoRepositoryImpl) FindAll(keyword string, limit int, offset int) ([]*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -80,7 +80,7 @@ func (m *mongoTodoRepository) FindAll(keyword string, limit int, offset int) ([]
 }
 
 // CountFindAll - count find all todo
-func (m *mongoTodoRepository) CountFindAll(keyword string) (int, error) {
+func (m *MongoTodoRepositoryImpl) CountFindAll(keyword string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -95,7 +95,7 @@ func (m *mongoTodoRepository) CountFindAll(keyword string) (int, error) {
 }
 
 // FindById - find todo by id
-func (m *mongoTodoRepository) FindById(id string) (*models.Todo, error) {
+func (m *MongoTodoRepositoryImpl) FindById(id string) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -120,7 +120,7 @@ func (m *mongoTodoRepository) FindById(id string) (*models.Todo, error) {
 }
 
 // CountFindByID - find count todo by id
-func (m *mongoTodoRepository) CountFindByID(id string) (int, error) {
+func (m *MongoTodoRepositoryImpl) CountFindByID(id string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -143,7 +143,7 @@ func (m *mongoTodoRepository) CountFindByID(id string) (int, error) {
 }
 
 // Store - store todo
-func (m *mongoTodoRepository) Store(value *models.Todo) (*models.Todo, error) {
+func (m *MongoTodoRepositoryImpl) Store(value *models.Todo) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -172,7 +172,7 @@ func (m *mongoTodoRepository) Store(value *models.Todo) (*models.Todo, error) {
 }
 
 // Update - update todo by id
-func (m *mongoTodoRepository) Update(id string, value *models.Todo) (*models.Todo, error) {
+func (m *MongoTodoRepositoryImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -202,7 +202,7 @@ func (m *mongoTodoRepository) Update(id string, value *models.Todo) (*models.Tod
 }
 
 // Delete - delete todo by id
-func (m *mongoTodoRepository) Delete(id string) error {
+func (m *MongoTodoRepositoryImpl) Delete(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

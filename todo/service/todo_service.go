@@ -14,19 +14,19 @@ type TodoService interface {
 	Delete(id string) error
 }
 
-type todoService struct {
+type TodoServiceImpl struct {
 	todoRepo todo_repository.TodoRepository
 }
 
 // NewTodoService will create new an TodoService object representation of TodoService interface
 func NewTodoService(a todo_repository.TodoRepository) TodoService {
-	return &todoService{
+	return &TodoServiceImpl{
 		todoRepo: a,
 	}
 }
 
 // GetAll - get all todo service
-func (a *todoService) GetAll(keyword string, limit int, offset int) ([]*models.Todo, int, error) {
+func (a *TodoServiceImpl) GetAll(keyword string, limit int, offset int) ([]*models.Todo, int, error) {
 	res, err := a.todoRepo.FindAll(keyword, limit, offset)
 	if err != nil {
 		return nil, 0, err
@@ -42,7 +42,7 @@ func (a *todoService) GetAll(keyword string, limit int, offset int) ([]*models.T
 }
 
 // GetByID - get todo by id service
-func (a *todoService) GetByID(id string) (*models.Todo, error) {
+func (a *TodoServiceImpl) GetByID(id string) (*models.Todo, error) {
 	res, err := a.todoRepo.FindById(id)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (a *todoService) GetByID(id string) (*models.Todo, error) {
 }
 
 // Create - creating todo service
-func (a *todoService) Create(value *models.Todo) (*models.Todo, error) {
+func (a *TodoServiceImpl) Create(value *models.Todo) (*models.Todo, error) {
 	res, err := a.todoRepo.Store(&models.Todo{
 		Title:       value.Title,
 		Description: value.Description,
@@ -65,7 +65,7 @@ func (a *todoService) Create(value *models.Todo) (*models.Todo, error) {
 }
 
 // Update - update todo service
-func (a *todoService) Update(id string, value *models.Todo) (*models.Todo, error) {
+func (a *TodoServiceImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
 	_, err := a.todoRepo.CountFindByID(id)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (a *todoService) Update(id string, value *models.Todo) (*models.Todo, error
 }
 
 // Delete - delete todo service
-func (a *todoService) Delete(id string) error {
+func (a *TodoServiceImpl) Delete(id string) error {
 	err := a.todoRepo.Delete(id)
 	if err != nil {
 		return err
