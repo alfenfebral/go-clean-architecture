@@ -5,8 +5,8 @@ import (
 	todorepository "go-clean-architecture/todo/repository"
 )
 
-// TodoService represent the todo service
-type TodoService interface {
+// Service represent the todo service
+type Service interface {
 	GetAll(keyword string, limit int, offset int) ([]*models.Todo, int, error)
 	GetByID(id string) (*models.Todo, error)
 	Create(value *models.Todo) (*models.Todo, error)
@@ -14,19 +14,19 @@ type TodoService interface {
 	Delete(id string) error
 }
 
-type TodoServiceImpl struct {
-	todoRepo todorepository.TodoRepository
+type ServiceImpl struct {
+	todoRepo todorepository.Repository
 }
 
-// NewTodoService will create new an TodoService object representation of TodoService interface
-func NewTodoService(a todorepository.TodoRepository) TodoService {
-	return &TodoServiceImpl{
+// New will create new an ServiceImpl object representation of Service interface
+func New(a todorepository.Repository) Service {
+	return &ServiceImpl{
 		todoRepo: a,
 	}
 }
 
 // GetAll - get all todo service
-func (a *TodoServiceImpl) GetAll(keyword string, limit int, offset int) ([]*models.Todo, int, error) {
+func (a *ServiceImpl) GetAll(keyword string, limit int, offset int) ([]*models.Todo, int, error) {
 	res, err := a.todoRepo.FindAll(keyword, limit, offset)
 	if err != nil {
 		return nil, 0, err
@@ -42,7 +42,7 @@ func (a *TodoServiceImpl) GetAll(keyword string, limit int, offset int) ([]*mode
 }
 
 // GetByID - get todo by id service
-func (a *TodoServiceImpl) GetByID(id string) (*models.Todo, error) {
+func (a *ServiceImpl) GetByID(id string) (*models.Todo, error) {
 	res, err := a.todoRepo.FindById(id)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (a *TodoServiceImpl) GetByID(id string) (*models.Todo, error) {
 }
 
 // Create - creating todo service
-func (a *TodoServiceImpl) Create(value *models.Todo) (*models.Todo, error) {
+func (a *ServiceImpl) Create(value *models.Todo) (*models.Todo, error) {
 	res, err := a.todoRepo.Store(&models.Todo{
 		Title:       value.Title,
 		Description: value.Description,
@@ -65,7 +65,7 @@ func (a *TodoServiceImpl) Create(value *models.Todo) (*models.Todo, error) {
 }
 
 // Update - update todo service
-func (a *TodoServiceImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
+func (a *ServiceImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
 	_, err := a.todoRepo.CountFindByID(id)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (a *TodoServiceImpl) Update(id string, value *models.Todo) (*models.Todo, e
 }
 
 // Delete - delete todo service
-func (a *TodoServiceImpl) Delete(id string) error {
+func (a *ServiceImpl) Delete(id string) error {
 	err := a.todoRepo.Delete(id)
 	if err != nil {
 		return err

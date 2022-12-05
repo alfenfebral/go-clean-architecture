@@ -44,7 +44,7 @@ func TestTodoFindAll(t *testing.T) {
 	assert.NoError(t, err)
 	defer client.Disconnect(ctx)
 
-	repo := repository.NewMongoTodoRepository(client)
+	repo := repository.New(client)
 
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	defer mt.Close()

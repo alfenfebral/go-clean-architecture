@@ -17,7 +17,7 @@ import (
 	todohttpdelivery "go-clean-architecture/todo/delivery/http"
 	todorepository "go-clean-architecture/todo/repository"
 	todoservice "go-clean-architecture/todo/service"
-	response "go-clean-architecture/utils/response"
+	responseutil "go-clean-architecture/utils/response"
 )
 
 func Routes() *chi.Mux {
@@ -60,7 +60,7 @@ func main() {
 	router := Routes()
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		render.JSON(w, r, response.H{
+		render.JSON(w, r, responseutil.H{
 			"success": "true",
 			"code":    200,
 			"message": "Services run properly",
@@ -68,14 +68,14 @@ func main() {
 	})
 
 	// Repository
-	todoRepo := todorepository.NewMongoTodoRepository(client)
+	todoRepo := todorepository.New(client)
 
 	// Service
-	todoService := todoservice.NewTodoService(todoRepo)
+	todoService := todoservice.New(todoRepo)
 
 	// Handler
-	todoHandler := todohttpdelivery.NewTodoHTTPHandler(router, todoService)
-	todoHandler.RegisterRoutes()
+	todoHandler := todohttpdelivery.New(router, todoService)
+	todoHandler.RegisterRoutes(router)
 
 	// Print
 	PrintAllRoutes(router)

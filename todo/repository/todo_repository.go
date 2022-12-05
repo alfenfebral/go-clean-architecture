@@ -15,8 +15,7 @@ import (
 	timeutil "go-clean-architecture/utils/time"
 )
 
-// TodoRepository represent the todo repository contract
-type TodoRepository interface {
+type Repository interface {
 	FindAll(keyword string, limit int, offset int) ([]*models.Todo, error)
 	CountFindAll(keyword string) (int, error)
 	FindById(id string) (*models.Todo, error)
@@ -26,19 +25,19 @@ type TodoRepository interface {
 	Delete(id string) error
 }
 
-type MongoTodoRepositoryImpl struct {
+type RepositoryImpl struct {
 	client *mongo.Client
 }
 
-// NewMongoTodoRepository will create an object that represent the TodoRepository interface
-func NewMongoTodoRepository(client *mongo.Client) TodoRepository {
-	return &MongoTodoRepositoryImpl{
+// New will create an object that represent the Repository interface
+func New(client *mongo.Client) Repository {
+	return &RepositoryImpl{
 		client: client,
 	}
 }
 
 // FindAll - find all todo
-func (m *MongoTodoRepositoryImpl) FindAll(keyword string, limit int, offset int) ([]*models.Todo, error) {
+func (m *RepositoryImpl) FindAll(keyword string, limit int, offset int) ([]*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -80,7 +79,7 @@ func (m *MongoTodoRepositoryImpl) FindAll(keyword string, limit int, offset int)
 }
 
 // CountFindAll - count find all todo
-func (m *MongoTodoRepositoryImpl) CountFindAll(keyword string) (int, error) {
+func (m *RepositoryImpl) CountFindAll(keyword string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -95,7 +94,7 @@ func (m *MongoTodoRepositoryImpl) CountFindAll(keyword string) (int, error) {
 }
 
 // FindById - find todo by id
-func (m *MongoTodoRepositoryImpl) FindById(id string) (*models.Todo, error) {
+func (m *RepositoryImpl) FindById(id string) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -120,7 +119,7 @@ func (m *MongoTodoRepositoryImpl) FindById(id string) (*models.Todo, error) {
 }
 
 // CountFindByID - find count todo by id
-func (m *MongoTodoRepositoryImpl) CountFindByID(id string) (int, error) {
+func (m *RepositoryImpl) CountFindByID(id string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -143,7 +142,7 @@ func (m *MongoTodoRepositoryImpl) CountFindByID(id string) (int, error) {
 }
 
 // Store - store todo
-func (m *MongoTodoRepositoryImpl) Store(value *models.Todo) (*models.Todo, error) {
+func (m *RepositoryImpl) Store(value *models.Todo) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -172,7 +171,7 @@ func (m *MongoTodoRepositoryImpl) Store(value *models.Todo) (*models.Todo, error
 }
 
 // Update - update todo by id
-func (m *MongoTodoRepositoryImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
+func (m *RepositoryImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -202,7 +201,7 @@ func (m *MongoTodoRepositoryImpl) Update(id string, value *models.Todo) (*models
 }
 
 // Delete - delete todo by id
-func (m *MongoTodoRepositoryImpl) Delete(id string) error {
+func (m *RepositoryImpl) Delete(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

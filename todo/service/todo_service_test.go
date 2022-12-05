@@ -19,7 +19,7 @@ func TestTodoGetAll(t *testing.T) {
 		mockList = append(mockList, &models.Todo{})
 
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("FindAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(mockList, nil)
 		mockRepository.On("CountFindAll", mock.AnythingOfType("string")).Return(10, nil)
@@ -33,7 +33,7 @@ func TestTodoGetAll(t *testing.T) {
 
 	t.Run("error when find all", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("FindAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, errorsutil.ErrDefault)
 		mockRepository.On("CountFindAll", mock.AnythingOfType("string")).Return(10, nil)
@@ -46,7 +46,7 @@ func TestTodoGetAll(t *testing.T) {
 
 	t.Run("error when count find all", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("FindAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, nil)
 		mockRepository.On("CountFindAll", mock.AnythingOfType("string")).Return(10, errorsutil.ErrDefault)
@@ -64,7 +64,7 @@ func TestTodoGetByID(t *testing.T) {
 		var mockTodo = &models.Todo{}
 
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("FindById", mock.AnythingOfType("string")).Return(mockTodo, nil)
 
@@ -76,7 +76,7 @@ func TestTodoGetByID(t *testing.T) {
 
 	t.Run("error when find by id", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("FindById", mock.AnythingOfType("string")).Return(nil, errorsutil.ErrDefault)
 		result, err := service.GetByID(DefaultID)
@@ -91,7 +91,7 @@ func TestTodoCreate(t *testing.T) {
 		var mockTodo = &models.Todo{}
 
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("Store", mock.AnythingOfType("*models.Todo")).Return(mockTodo, nil)
 
@@ -103,7 +103,7 @@ func TestTodoCreate(t *testing.T) {
 
 	t.Run("error when create", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("Store", mock.AnythingOfType("*models.Todo")).Return(nil, errorsutil.ErrDefault)
 		result, err := service.Create(&models.Todo{})
@@ -118,7 +118,7 @@ func TestTodoUpdate(t *testing.T) {
 		var mockTodo = &models.Todo{}
 
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("CountFindByID", mock.AnythingOfType("string")).Return(10, nil)
 		mockRepository.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(mockTodo, nil)
@@ -131,7 +131,7 @@ func TestTodoUpdate(t *testing.T) {
 
 	t.Run("error when count find by id", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("CountFindByID", mock.AnythingOfType("string")).Return(0, errorsutil.ErrDefault)
 		mockRepository.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, nil)
@@ -144,7 +144,7 @@ func TestTodoUpdate(t *testing.T) {
 
 	t.Run("error when update", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("CountFindByID", mock.AnythingOfType("string")).Return(10, nil)
 		mockRepository.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, errorsutil.ErrDefault)
@@ -159,7 +159,7 @@ func TestTodoUpdate(t *testing.T) {
 func TestTodoDelete(t *testing.T) {
 	t.Run("success when delete", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("Delete", mock.AnythingOfType("string")).Return(nil)
 
@@ -170,7 +170,7 @@ func TestTodoDelete(t *testing.T) {
 
 	t.Run("error when delete", func(t *testing.T) {
 		mockRepository := new(mockrepository.TodoRepository)
-		service := todoservice.NewTodoService(mockRepository)
+		service := todoservice.New(mockRepository)
 
 		mockRepository.On("Delete", mock.AnythingOfType("string")).Return(errorsutil.ErrDefault)
 
