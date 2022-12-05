@@ -74,7 +74,7 @@ func main() {
 	todoService := todoservice.New(todoRepo)
 
 	// Handler
-	todoHandler := todohttpdelivery.New(router, todoService)
+	todoHandler := todohttpdelivery.New(todoService)
 	todoHandler.RegisterRoutes(router)
 
 	// Print

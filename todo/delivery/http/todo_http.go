@@ -28,7 +28,7 @@ type HTTPHandlerImpl struct {
 }
 
 // New - make http handler
-func New(router *chi.Mux, service todoservice.Service) HTTPHandler {
+func New(service todoservice.Service) HTTPHandler {
 	return &HTTPHandlerImpl{
 		todoService: service,
 	}
