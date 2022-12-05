@@ -1,8 +1,8 @@
-package utils
+package response
 
 import (
 	"go-clean-architecture/pkg/logger"
-	"go-clean-architecture/utils"
+	pkgvalidator "go-clean-architecture/pkg/validator"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -33,7 +33,7 @@ func ResponseErrorValidation(w http.ResponseWriter, r *http.Request, err error) 
 		"success": false,
 		"code":    http.StatusBadRequest,
 		"message": "Validation errors in your request",
-		"errors":  utils.ValidatonError(err).Errors,
+		"errors":  pkgvalidator.ValidatonError(err).Errors,
 	})
 }
 

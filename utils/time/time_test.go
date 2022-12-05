@@ -1,14 +1,14 @@
-package utils_test
+package timeutil_test
 
 import (
 	"testing"
 
-	"go-clean-architecture/utils"
+	timeutil "go-clean-architecture/utils/time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTimeNow(t *testing.T) {
-	value := utils.GetTimeNow()
+	value := timeutil.GetTimeNow()
 	assert.Equal(t, value, value)
 }

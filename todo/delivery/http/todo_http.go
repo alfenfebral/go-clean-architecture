@@ -1,11 +1,13 @@
-package http
+package httpdelivery
 
 import (
 	"net/http"
+	"strconv"
 
+	pkgvalidator "go-clean-architecture/pkg/validator"
 	"go-clean-architecture/todo/models"
-	todo_service "go-clean-architecture/todo/service"
-	"go-clean-architecture/utils"
+	todoservice "go-clean-architecture/todo/service"
+	paginationutil "go-clean-architecture/utils/pagination"
 	response "go-clean-architecture/utils/response"
 
 	"github.com/go-chi/chi/v5"
@@ -15,11 +17,11 @@ import (
 // TodoHTTPHandlerImpl represent the http handler
 type TodoHTTPHandlerImpl struct {
 	router      *chi.Mux
-	todoService todo_service.TodoService
+	todoService todoservice.TodoService
 }
 
 // NewTodoHTTPHandler - make http handler
-func NewTodoHTTPHandler(router *chi.Mux, service todo_service.TodoService) *TodoHTTPHandlerImpl {
+func NewTodoHTTPHandler(router *chi.Mux, service todoservice.TodoService) *TodoHTTPHandlerImpl {
 	return &TodoHTTPHandlerImpl{
 		router:      router,
 		todoService: service,
@@ -37,31 +39,43 @@ func (handler *TodoHTTPHandlerImpl) RegisterRoutes() {
 // GetAll - get all todo http handler
 func (handler *TodoHTTPHandlerImpl) GetAll(w http.ResponseWriter, r *http.Request) {
 	qQuery := r.URL.Query().Get("q")
-	pageQuery := r.URL.Query().Get("page")
-	perPageQuery := r.URL.Query().Get("per_page")
+	pageQueryStr := r.URL.Query().Get("page")
+	perPageQueryStr := r.URL.Query().Get("per_page")
 
-	err := utils.ValidateStruct(&models.TodoListRequest{
+	err := pkgvalidator.ValidateStruct(&models.TodoListRequest{
 		Keywords: &models.SearchForm{
 			Keywords: qQuery,
 		},
-		Page:    pageQuery,
-		PerPage: perPageQuery,
+		Page:    pageQueryStr,
+		PerPage: perPageQueryStr,
 	})
 	if err != nil {
 		response.ResponseErrorValidation(w, r, err)
 		return
 	}
 
-	currentPage := utils.CurrentPage(pageQuery)
-	perPage := utils.PerPage(perPageQuery)
-	offset := utils.Offset(currentPage, perPage)
+	pageQuery, err := strconv.Atoi(pageQueryStr)
+	if err != nil {
+		response.ResponseError(w, r, err)
+		return
+	}
+
+	perPageQuery, err := strconv.Atoi(perPageQueryStr)
+	if err != nil {
+		response.ResponseError(w, r, err)
+		return
+	}
+
+	currentPage := paginationutil.CurrentPage(pageQuery)
+	perPage := paginationutil.PerPage(perPageQuery)
+	offset := paginationutil.Offset(currentPage, perPage)
 
 	results, totalData, err := handler.todoService.GetAll(qQuery, perPage, offset)
 	if err != nil {
 		response.ResponseError(w, r, err)
 		return
 	}
-	totalPages := utils.TotalPage(totalData, perPage)
+	totalPages := paginationutil.TotalPage(totalData, perPage)
 
 	response.ResponseOKList(w, r, &response.ResponseSuccessList{
 		Data: results,

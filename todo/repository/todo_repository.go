@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"os"
 	"time"
 
@@ -12,7 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"go-clean-architecture/todo/models"
-	"go-clean-architecture/utils"
+	errorsutil "go-clean-architecture/utils/errors"
+	timeutil "go-clean-architecture/utils/time"
 )
 
 // TodoRepository represent the todo repository contract
@@ -101,7 +101,7 @@ func (m *MongoTodoRepositoryImpl) FindById(id string) (*models.Todo, error) {
 
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, errors.New("not found")
+		return nil, errorsutil.ErrNotFound
 	}
 
 	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
@@ -110,7 +110,7 @@ func (m *MongoTodoRepositoryImpl) FindById(id string) (*models.Todo, error) {
 	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&result)
 	if err != nil {
 		if err.Error() == "mongo: no documents in result" {
-			return result, errors.New("not found")
+			return result, errorsutil.ErrNotFound
 		}
 
 		return result, err
@@ -126,7 +126,7 @@ func (m *MongoTodoRepositoryImpl) CountFindByID(id string) (int, error) {
 
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return 0, errors.New("not found")
+		return 0, errorsutil.ErrNotFound
 	}
 
 	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
@@ -136,7 +136,7 @@ func (m *MongoTodoRepositoryImpl) CountFindByID(id string) (int, error) {
 	}
 
 	if total <= 0 {
-		return 0, errors.New("not found")
+		return 0, errorsutil.ErrNotFound
 	}
 
 	return int(total), nil
@@ -149,7 +149,7 @@ func (m *MongoTodoRepositoryImpl) Store(value *models.Todo) (*models.Todo, error
 
 	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 
-	timeNow := utils.GetTimeNow()
+	timeNow := timeutil.GetTimeNow()
 	res, err := collection.InsertOne(ctx, bson.M{
 		"title":       value.Title,
 		"description": value.Description,
@@ -178,12 +178,12 @@ func (m *MongoTodoRepositoryImpl) Update(id string, value *models.Todo) (*models
 
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, errors.New("not found")
+		return nil, errorsutil.ErrNotFound
 	}
 
 	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 
-	timeNow := utils.GetTimeNow()
+	timeNow := timeutil.GetTimeNow()
 	bsonValue := bson.D{
 		{Key: "title", Value: value.Title},
 		{Key: "description", Value: value.Description},
@@ -210,7 +210,7 @@ func (m *MongoTodoRepositoryImpl) Delete(id string) error {
 
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return errors.New("not found")
+		return errorsutil.ErrNotFound
 	}
 
 	result, err := collection.DeleteOne(ctx, bson.M{"_id": docID})
@@ -219,7 +219,7 @@ func (m *MongoTodoRepositoryImpl) Delete(id string) error {
 	}
 
 	if result.DeletedCount <= 0 {
-		return errors.New("not found")
+		return errorsutil.ErrNotFound
 	}
 
 	return nil

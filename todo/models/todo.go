@@ -1,10 +1,9 @@
 package models
 
 import (
+	pkgvalidator "go-clean-architecture/pkg/validator"
 	"net/http"
 	"time"
-
-	"go-clean-architecture/utils"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -25,7 +24,7 @@ type TodoRequest struct {
 }
 
 func (tr *TodoRequest) Bind(r *http.Request) error {
-	return utils.ValidateStruct(tr)
+	return pkgvalidator.ValidateStruct(tr)
 }
 
 // TodoListRequest - form for list validation

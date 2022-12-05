@@ -12,11 +12,11 @@ import (
 
 	"go-clean-architecture/pkg/config"
 	"go-clean-architecture/pkg/logger"
-	pkg_mongodb "go-clean-architecture/pkg/mongodb"
-	todo_http "go-clean-architecture/todo/delivery/http"
-	todo_repository "go-clean-architecture/todo/repository"
-	todod_service "go-clean-architecture/todo/service"
-	"go-clean-architecture/utils"
+	pkgmongodb "go-clean-architecture/pkg/mongodb"
+	pkgvalidator "go-clean-architecture/pkg/validator"
+	todohttpdelivery "go-clean-architecture/todo/delivery/http"
+	todorepository "go-clean-architecture/todo/repository"
+	todoservice "go-clean-architecture/todo/service"
 	response "go-clean-architecture/utils/response"
 )
 
@@ -45,7 +45,7 @@ func PrintAllRoutes(router *chi.Mux) {
 }
 
 func main() {
-	utils.InitializeValidator()
+	pkgvalidator.New()
 
 	// Load environment variables
 	err := config.LoadConfig()
@@ -54,7 +54,7 @@ func main() {
 	}
 
 	// Init MongoDB
-	_, cancel, client := pkg_mongodb.InitMongoDB()
+	_, cancel, client := pkgmongodb.InitMongoDB()
 	defer cancel()
 
 	router := Routes()
@@ -68,13 +68,13 @@ func main() {
 	})
 
 	// Repository
-	todoRepo := todo_repository.NewMongoTodoRepository(client)
+	todoRepo := todorepository.NewMongoTodoRepository(client)
 
 	// Service
-	todoService := todod_service.NewTodoService(todoRepo)
+	todoService := todoservice.NewTodoService(todoRepo)
 
 	// Handler
-	todoHandler := todo_http.NewTodoHTTPHandler(router, todoService)
+	todoHandler := todohttpdelivery.NewTodoHTTPHandler(router, todoService)
 	todoHandler.RegisterRoutes()
 
 	// Print

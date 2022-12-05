@@ -1,17 +1,17 @@
-package http_test
+package httpdelivery_test
 
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	todo_http "go-clean-architecture/todo/delivery/http"
-	"go-clean-architecture/utils"
+	pkgvalidator "go-clean-architecture/pkg/validator"
+	tododelivery "go-clean-architecture/todo/delivery/http"
+	errorsutil "go-clean-architecture/utils/errors"
 
-	mockService "go-clean-architecture/todo/mocks/service"
+	mockservice "go-clean-architecture/todo/mocks/service"
 
 	"go-clean-architecture/todo/models"
 
@@ -20,8 +20,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var ErrDefault error = errors.New("error")
-var ErrNotFound error = errors.New("not found")
 var WhenError400EOF string = "when return 400 bad request (error EOF)"
 var WhenError500Service string = "when return 500 internal error (error service)"
 var WhenError500Query string = "when return 500 internal error (error query)"
@@ -31,29 +29,29 @@ var WhenSuccess201Created string = "when return 201 created"
 var WhenSuccess200OK string = "when return 200 ok"
 
 func TestNewTodoHTTPHandler(t *testing.T) {
-	utils.InitializeValidator()
+	pkgvalidator.New()
 
 	router := chi.NewRouter()
-	mockService := new(mockService.TodoService)
+	mockService := new(mockservice.TodoService)
 
 	mockService.On("Create", mock.AnythingOfType("*models.Todo")).Return(&models.Todo{}, nil)
 
-	todo_http.NewTodoHTTPHandler(router, mockService)
+	tododelivery.NewTodoHTTPHandler(router, mockService)
 }
 
 // TestTodoGetAll - testing GetAll [200]
 func TestTodoGetAll(t *testing.T) {
 	t.Run(WhenError400Validation, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodGet, "/api/v1/todo?page=-1&per_page=-1", nil)
 		assert.NoError(t, err)
 
 		req.Header.Set("Content-Type", "application/json")
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.GetAll)
@@ -67,18 +65,18 @@ func TestTodoGetAll(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenError500Service, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodGet, "/api/v1/todo?page=1&per_page=10", nil)
 		assert.NoError(t, err)
 
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("GetAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, 1, ErrDefault)
+		mockService.On("GetAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, 1, errorsutil.ErrDefault)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.GetAll)
@@ -92,12 +90,12 @@ func TestTodoGetAll(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenSuccess200OK, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
 		mockListTodo := make([]*models.Todo, 0)
 		mockListTodo = append(mockListTodo, &models.Todo{})
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodGet, "/api/v1/todo?page=1&per_page=10", nil)
 		assert.NoError(t, err)
@@ -106,7 +104,7 @@ func TestTodoGetAll(t *testing.T) {
 
 		mockService.On("GetAll", mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(mockListTodo, 1, nil)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.GetAll)
@@ -124,16 +122,16 @@ func TestTodoGetAll(t *testing.T) {
 // TestTodoCreate - testing create [201]
 func TestTodoCreate(t *testing.T) {
 	t.Run(WhenError400EOF, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodPost, "/api/v1/todo", bytes.NewReader([]byte("")))
 		assert.NoError(t, err)
 
 		req.Header.Set("Content-Type", "application/json")
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Create)
@@ -144,9 +142,9 @@ func TestTodoCreate(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
 	})
 	t.Run("when return 400 bad request (error validation) ", func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		mockPostBody := map[string]interface{}{
 			"title":       "",
@@ -159,7 +157,7 @@ func TestTodoCreate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Create)
@@ -170,9 +168,9 @@ func TestTodoCreate(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
 	})
 	t.Run("when error 500 internal error (error service)", func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		mockPostBody := map[string]interface{}{
 			"title":       "lorem ipsum",
@@ -185,9 +183,9 @@ func TestTodoCreate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("Create", mock.AnythingOfType("*models.Todo")).Return(nil, errors.New(""))
+		mockService.On("Create", mock.AnythingOfType("*models.Todo")).Return(nil, errorsutil.ErrDefault)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Create)
@@ -201,9 +199,9 @@ func TestTodoCreate(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("when return 201 created", func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		mockPostBody := map[string]interface{}{
 			"title":       "lorem ipsum",
@@ -218,7 +216,7 @@ func TestTodoCreate(t *testing.T) {
 
 		mockService.On("Create", mock.AnythingOfType("*models.Todo")).Return(&models.Todo{}, nil)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Create)
@@ -236,18 +234,18 @@ func TestTodoCreate(t *testing.T) {
 // TestTodoGetByID - testing GetByID [200]
 func TestTodoGetByID(t *testing.T) {
 	t.Run(WhenError404NotFound, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodGet, "/api/v1/todo?id=1", nil)
 		assert.NoError(t, err)
 
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("GetByID", mock.AnythingOfType("string")).Return(nil, ErrNotFound)
+		mockService.On("GetByID", mock.AnythingOfType("string")).Return(nil, errorsutil.ErrNotFound)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.GetByID)
@@ -261,18 +259,18 @@ func TestTodoGetByID(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenError500Service, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodGet, "/api/v1/todo?id=1", nil)
 		assert.NoError(t, err)
 
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("GetByID", mock.AnythingOfType("string")).Return(nil, ErrDefault)
+		mockService.On("GetByID", mock.AnythingOfType("string")).Return(nil, errorsutil.ErrDefault)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.GetByID)
@@ -286,9 +284,9 @@ func TestTodoGetByID(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenSuccess200OK, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodGet, "/api/v1/todo?id=1", nil)
 		assert.NoError(t, err)
@@ -297,7 +295,7 @@ func TestTodoGetByID(t *testing.T) {
 
 		mockService.On("GetByID", mock.AnythingOfType("string")).Return(&models.Todo{}, nil)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.GetByID)
@@ -315,9 +313,9 @@ func TestTodoGetByID(t *testing.T) {
 // TestTodoUpdate - testing update [200]
 func TestTodoUpdate(t *testing.T) {
 	t.Run(WhenError400EOF, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodPut, "/api/v1/product?id=1", bytes.NewReader([]byte("")))
 		assert.NoError(t, err)
@@ -326,7 +324,7 @@ func TestTodoUpdate(t *testing.T) {
 
 		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(&models.Todo{}, nil)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Update)
@@ -337,9 +335,9 @@ func TestTodoUpdate(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
 	})
 	t.Run(WhenError400Validation, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		mockPostBody := map[string]interface{}{
 			"title":       "",
@@ -352,7 +350,7 @@ func TestTodoUpdate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Update)
@@ -366,9 +364,9 @@ func TestTodoUpdate(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenError404NotFound, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		mockPostBody := map[string]interface{}{
 			"title":       "a",
@@ -381,9 +379,9 @@ func TestTodoUpdate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, ErrNotFound)
+		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, errorsutil.ErrNotFound)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Update)
@@ -397,9 +395,9 @@ func TestTodoUpdate(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenError500Service, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		mockPostBody := map[string]interface{}{
 			"title":       "a",
@@ -412,9 +410,9 @@ func TestTodoUpdate(t *testing.T) {
 
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, ErrDefault)
+		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(nil, errorsutil.ErrDefault)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Update)
@@ -428,9 +426,9 @@ func TestTodoUpdate(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenSuccess200OK, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		mockPostBody := map[string]interface{}{
 			"title":       "a",
@@ -445,7 +443,7 @@ func TestTodoUpdate(t *testing.T) {
 
 		mockService.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("*models.Todo")).Return(&models.Todo{}, nil)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Update)
@@ -463,16 +461,16 @@ func TestTodoUpdate(t *testing.T) {
 // TestDeleteSuccess - testing delete [200]
 func TestTodoDelete(t *testing.T) {
 	t.Run(WhenError404NotFound, func(t *testing.T) {
-		utils.InitializeValidator()
-		mockService := new(mockService.TodoService)
+		pkgvalidator.New()
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodDelete, "/api/v1/product?id=", nil)
 		assert.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("Delete", mock.AnythingOfType("string")).Return(ErrNotFound)
+		mockService.On("Delete", mock.AnythingOfType("string")).Return(errorsutil.ErrNotFound)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Delete)
@@ -482,16 +480,16 @@ func TestTodoDelete(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, rr.Code)
 	})
 	t.Run(WhenError500Service, func(t *testing.T) {
-		utils.InitializeValidator()
-		mockService := new(mockService.TodoService)
+		pkgvalidator.New()
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodDelete, "/api/v1/todo?id=1", nil)
 		assert.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
 
-		mockService.On("Delete", mock.AnythingOfType("string")).Return(ErrDefault)
+		mockService.On("Delete", mock.AnythingOfType("string")).Return(errorsutil.ErrDefault)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Delete)
@@ -504,9 +502,9 @@ func TestTodoDelete(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run(WhenSuccess200OK, func(t *testing.T) {
-		utils.InitializeValidator()
+		pkgvalidator.New()
 
-		mockService := new(mockService.TodoService)
+		mockService := new(mockservice.TodoService)
 
 		req, err := http.NewRequest(http.MethodDelete, "/api/v1/todo?id=1", nil)
 		assert.NoError(t, err)
@@ -515,7 +513,7 @@ func TestTodoDelete(t *testing.T) {
 
 		mockService.On("Delete", mock.AnythingOfType("string")).Return(nil)
 
-		todoHandler := todo_http.NewTodoHTTPHandler(chi.NewRouter(), mockService)
+		todoHandler := tododelivery.NewTodoHTTPHandler(chi.NewRouter(), mockService)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(todoHandler.Delete)
