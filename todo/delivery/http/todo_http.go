@@ -24,13 +24,13 @@ type HTTPHandler interface {
 }
 
 type HTTPHandlerImpl struct {
-	todoService todoservice.Service
+	service todoservice.Service
 }
 
 // New - make http handler
 func New(service todoservice.Service) HTTPHandler {
 	return &HTTPHandlerImpl{
-		todoService: service,
+		service: service,
 	}
 }
 
@@ -67,7 +67,7 @@ func (h *HTTPHandlerImpl) GetAll(w http.ResponseWriter, r *http.Request) {
 	perPage := paginationutil.PerPage(perPageQuery)
 	offset := paginationutil.Offset(currentPage, perPage)
 
-	results, totalData, err := h.todoService.GetAll(qQuery, perPage, offset)
+	results, totalData, err := h.service.GetAll(qQuery, perPage, offset)
 	if err != nil {
 		responseutil.ResponseError(w, r, err)
 		return
@@ -91,7 +91,7 @@ func (h *HTTPHandlerImpl) GetByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	// Get detail
-	result, err := h.todoService.GetByID(id)
+	result, err := h.service.GetByID(id)
 	if err != nil {
 		if err.Error() == "not found" {
 			responseutil.ResponseNotFound(w, r, "Item not found")
@@ -121,7 +121,7 @@ func (h *HTTPHandlerImpl) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := h.todoService.Create(&models.Todo{
+	result, err := h.service.Create(&models.Todo{
 		Title:       data.Title,
 		Description: data.Description,
 	})
@@ -152,7 +152,7 @@ func (h *HTTPHandlerImpl) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Edit data
-	_, err := h.todoService.Update(id, &models.Todo{
+	_, err := h.service.Update(id, &models.Todo{
 		Title:       data.Title,
 		Description: data.Description,
 	})
@@ -180,7 +180,7 @@ func (h *HTTPHandlerImpl) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	// Delete record
-	err := h.todoService.Delete(id)
+	err := h.service.Delete(id)
 	if err != nil {
 		if err.Error() == "not found" {
 			responseutil.ResponseNotFound(w, r, "Item not found")
