@@ -37,7 +37,7 @@ func New(client *mongo.Client) Repository {
 }
 
 // FindAll - find all todo
-func (m *RepositoryImpl) FindAll(keyword string, limit int, offset int) ([]*models.Todo, error) {
+func (r *RepositoryImpl) FindAll(keyword string, limit int, offset int) ([]*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -48,7 +48,7 @@ func (m *RepositoryImpl) FindAll(keyword string, limit int, offset int) ([]*mode
 	findOptions.SetLimit(int64(limit))
 	findOptions.SetSkip(int64(offset))
 
-	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
+	collection := r.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 	cur, err := collection.Find(ctx, bson.M{"title": bson.M{"$regex": keyword, "$options": "i"}}, findOptions)
 	if err != nil {
 		return []*models.Todo{}, err
@@ -79,11 +79,11 @@ func (m *RepositoryImpl) FindAll(keyword string, limit int, offset int) ([]*mode
 }
 
 // CountFindAll - count find all todo
-func (m *RepositoryImpl) CountFindAll(keyword string) (int, error) {
+func (r *RepositoryImpl) CountFindAll(keyword string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
+	collection := r.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 
 	total, err := collection.CountDocuments(ctx, bson.M{"title": bson.M{"$regex": keyword, "$options": "i"}})
 	if err != nil {
@@ -94,7 +94,7 @@ func (m *RepositoryImpl) CountFindAll(keyword string) (int, error) {
 }
 
 // FindById - find todo by id
-func (m *RepositoryImpl) FindById(id string) (*models.Todo, error) {
+func (r *RepositoryImpl) FindById(id string) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -103,7 +103,7 @@ func (m *RepositoryImpl) FindById(id string) (*models.Todo, error) {
 		return nil, errorsutil.ErrNotFound
 	}
 
-	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
+	collection := r.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 
 	result := &models.Todo{}
 	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&result)
@@ -119,7 +119,7 @@ func (m *RepositoryImpl) FindById(id string) (*models.Todo, error) {
 }
 
 // CountFindByID - find count todo by id
-func (m *RepositoryImpl) CountFindByID(id string) (int, error) {
+func (r *RepositoryImpl) CountFindByID(id string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -128,7 +128,7 @@ func (m *RepositoryImpl) CountFindByID(id string) (int, error) {
 		return 0, errorsutil.ErrNotFound
 	}
 
-	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
+	collection := r.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 	total, err := collection.CountDocuments(ctx, bson.M{"_id": docID})
 	if err != nil {
 		return 0, err
@@ -142,11 +142,11 @@ func (m *RepositoryImpl) CountFindByID(id string) (int, error) {
 }
 
 // Store - store todo
-func (m *RepositoryImpl) Store(value *models.Todo) (*models.Todo, error) {
+func (r *RepositoryImpl) Store(value *models.Todo) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
+	collection := r.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 
 	timeNow := timeutil.GetTimeNow()
 	res, err := collection.InsertOne(ctx, bson.M{
@@ -171,7 +171,7 @@ func (m *RepositoryImpl) Store(value *models.Todo) (*models.Todo, error) {
 }
 
 // Update - update todo by id
-func (m *RepositoryImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
+func (r *RepositoryImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -180,7 +180,7 @@ func (m *RepositoryImpl) Update(id string, value *models.Todo) (*models.Todo, er
 		return nil, errorsutil.ErrNotFound
 	}
 
-	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
+	collection := r.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 
 	timeNow := timeutil.GetTimeNow()
 	bsonValue := bson.D{
@@ -201,11 +201,11 @@ func (m *RepositoryImpl) Update(id string, value *models.Todo) (*models.Todo, er
 }
 
 // Delete - delete todo by id
-func (m *RepositoryImpl) Delete(id string) error {
+func (r *RepositoryImpl) Delete(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	collection := m.client.Database(os.Getenv("DB_NAME")).Collection("todo")
+	collection := r.client.Database(os.Getenv("DB_NAME")).Collection("todo")
 
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

@@ -15,25 +15,25 @@ type Service interface {
 }
 
 type ServiceImpl struct {
-	todoRepo todorepository.Repository
+	todoRepository todorepository.Repository
 }
 
 // New will create new an ServiceImpl object representation of Service interface
-func New(a todorepository.Repository) Service {
+func New(todoRepository todorepository.Repository) Service {
 	return &ServiceImpl{
-		todoRepo: a,
+		todoRepository: todoRepository,
 	}
 }
 
 // GetAll - get all todo service
-func (a *ServiceImpl) GetAll(keyword string, limit int, offset int) ([]*models.Todo, int, error) {
-	res, err := a.todoRepo.FindAll(keyword, limit, offset)
+func (s *ServiceImpl) GetAll(keyword string, limit int, offset int) ([]*models.Todo, int, error) {
+	res, err := s.todoRepository.FindAll(keyword, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	// Count total
-	total, err := a.todoRepo.CountFindAll(keyword)
+	total, err := s.todoRepository.CountFindAll(keyword)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -42,8 +42,8 @@ func (a *ServiceImpl) GetAll(keyword string, limit int, offset int) ([]*models.T
 }
 
 // GetByID - get todo by id service
-func (a *ServiceImpl) GetByID(id string) (*models.Todo, error) {
-	res, err := a.todoRepo.FindById(id)
+func (s *ServiceImpl) GetByID(id string) (*models.Todo, error) {
+	res, err := s.todoRepository.FindById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +52,8 @@ func (a *ServiceImpl) GetByID(id string) (*models.Todo, error) {
 }
 
 // Create - creating todo service
-func (a *ServiceImpl) Create(value *models.Todo) (*models.Todo, error) {
-	res, err := a.todoRepo.Store(&models.Todo{
+func (r *ServiceImpl) Create(value *models.Todo) (*models.Todo, error) {
+	res, err := r.todoRepository.Store(&models.Todo{
 		Title:       value.Title,
 		Description: value.Description,
 	})
@@ -65,13 +65,13 @@ func (a *ServiceImpl) Create(value *models.Todo) (*models.Todo, error) {
 }
 
 // Update - update todo service
-func (a *ServiceImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
-	_, err := a.todoRepo.CountFindByID(id)
+func (r *ServiceImpl) Update(id string, value *models.Todo) (*models.Todo, error) {
+	_, err := r.todoRepository.CountFindByID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = a.todoRepo.Update(id, &models.Todo{
+	_, err = r.todoRepository.Update(id, &models.Todo{
 		Title:       value.Title,
 		Description: value.Description,
 	})
@@ -83,8 +83,8 @@ func (a *ServiceImpl) Update(id string, value *models.Todo) (*models.Todo, error
 }
 
 // Delete - delete todo service
-func (a *ServiceImpl) Delete(id string) error {
-	err := a.todoRepo.Delete(id)
+func (r *ServiceImpl) Delete(id string) error {
+	err := r.todoRepository.Delete(id)
 	if err != nil {
 		return err
 	}

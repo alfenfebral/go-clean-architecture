@@ -34,16 +34,16 @@ func New(service todoservice.Service) HTTPHandler {
 	}
 }
 
-func (handler *HTTPHandlerImpl) RegisterRoutes(router *chi.Mux) {
-	router.Get("/todo", handler.GetAll)
-	router.Get("/todo/{id}", handler.GetByID)
-	router.Post("/todo", handler.Create)
-	router.Put("/todo/{id}", handler.Update)
-	router.Delete("/todo/{id}", handler.Delete)
+func (h *HTTPHandlerImpl) RegisterRoutes(router *chi.Mux) {
+	router.Get("/todo", h.GetAll)
+	router.Get("/todo/{id}", h.GetByID)
+	router.Post("/todo", h.Create)
+	router.Put("/todo/{id}", h.Update)
+	router.Delete("/todo/{id}", h.Delete)
 }
 
 // GetAll - get all todo http handler
-func (handler *HTTPHandlerImpl) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h *HTTPHandlerImpl) GetAll(w http.ResponseWriter, r *http.Request) {
 	qQuery := r.URL.Query().Get("q")
 	pageQueryStr := r.URL.Query().Get("page")
 	perPageQueryStr := r.URL.Query().Get("per_page")
@@ -67,7 +67,7 @@ func (handler *HTTPHandlerImpl) GetAll(w http.ResponseWriter, r *http.Request) {
 	perPage := paginationutil.PerPage(perPageQuery)
 	offset := paginationutil.Offset(currentPage, perPage)
 
-	results, totalData, err := handler.todoService.GetAll(qQuery, perPage, offset)
+	results, totalData, err := h.todoService.GetAll(qQuery, perPage, offset)
 	if err != nil {
 		responseutil.ResponseError(w, r, err)
 		return
@@ -86,12 +86,12 @@ func (handler *HTTPHandlerImpl) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetByID - get todo by id http handler
-func (handler *HTTPHandlerImpl) GetByID(w http.ResponseWriter, r *http.Request) {
+func (h *HTTPHandlerImpl) GetByID(w http.ResponseWriter, r *http.Request) {
 	// Get and filter id param
 	id := chi.URLParam(r, "id")
 
 	// Get detail
-	result, err := handler.todoService.GetByID(id)
+	result, err := h.todoService.GetByID(id)
 	if err != nil {
 		if err.Error() == "not found" {
 			responseutil.ResponseNotFound(w, r, "Item not found")
@@ -109,7 +109,7 @@ func (handler *HTTPHandlerImpl) GetByID(w http.ResponseWriter, r *http.Request) 
 }
 
 // Create - create todo http handler
-func (handler *HTTPHandlerImpl) Create(w http.ResponseWriter, r *http.Request) {
+func (h *HTTPHandlerImpl) Create(w http.ResponseWriter, r *http.Request) {
 	data := &models.TodoRequest{}
 	if err := render.Bind(r, data); err != nil {
 		if err.Error() == "EOF" {
@@ -121,7 +121,7 @@ func (handler *HTTPHandlerImpl) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := handler.todoService.Create(&models.Todo{
+	result, err := h.todoService.Create(&models.Todo{
 		Title:       data.Title,
 		Description: data.Description,
 	})
@@ -136,7 +136,7 @@ func (handler *HTTPHandlerImpl) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 // Update - update todo by id http handler
-func (handler *HTTPHandlerImpl) Update(w http.ResponseWriter, r *http.Request) {
+func (h *HTTPHandlerImpl) Update(w http.ResponseWriter, r *http.Request) {
 	// Get and filter id param
 	id := chi.URLParam(r, "id")
 
@@ -152,7 +152,7 @@ func (handler *HTTPHandlerImpl) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Edit data
-	_, err := handler.todoService.Update(id, &models.Todo{
+	_, err := h.todoService.Update(id, &models.Todo{
 		Title:       data.Title,
 		Description: data.Description,
 	})
@@ -175,12 +175,12 @@ func (handler *HTTPHandlerImpl) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 // Delete - delete todo by id http handler
-func (handler *HTTPHandlerImpl) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *HTTPHandlerImpl) Delete(w http.ResponseWriter, r *http.Request) {
 	// Get and filter id param
 	id := chi.URLParam(r, "id")
 
 	// Delete record
-	err := handler.todoService.Delete(id)
+	err := h.todoService.Delete(id)
 	if err != nil {
 		if err.Error() == "not found" {
 			responseutil.ResponseNotFound(w, r, "Item not found")
