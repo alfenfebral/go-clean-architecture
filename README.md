@@ -1,6 +1,6 @@
 
 # Go Clean Architecture
-Go Distributed Tracing Using OpenTelemetry and Jaeger
+Go Clean Architecture
 ## Stack
 - Chi (net/http)
 - MongoDB
